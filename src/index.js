@@ -1,13 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './components/App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter as Router } from "react-router-dom";
+import { createStore } from "redux";
+import reducer from "./reducers";
+import middleware from "./middleware";
+import { Provider } from "react-redux";
+import LoadingBar from "react-redux-loading-bar";
+
+const store = createStore(reducer, middleware)
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={store}>
+    <Router>
+      <LoadingBar />
+      <App />
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
