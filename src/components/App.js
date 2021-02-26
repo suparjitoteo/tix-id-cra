@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import './App.css';
 import { Route } from "react-router-dom";
 import { handleReceiveCities } from "../actions/cities";
 
@@ -19,14 +18,16 @@ function App() {
   }, [dispatch])
 
   return (
-    <div className='container'>
+    <div>
       <Nav />
-      <Route path='/' exact>
-        <NowPlaying />
-      </Route>
-      <Route path='/upcoming'>
-        <Upcoming />
-      </Route>
+      <div className='container'>
+        <Route path='/' exact>
+          <NowPlaying />
+        </Route>
+        <Route path='/upcoming'>
+          <Upcoming />
+        </Route>
+      </div>
     </div>
   )
 }

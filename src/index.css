@@ -1,3 +1,7 @@
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --black: #000;
@@ -33,24 +37,4 @@ body {
   min-height: 100vh;
   background: var(--black);
   color: var(--white);
-}
-
-.container {
-  position: relative;
-  max-width: 1000px;
-  min-width: 280px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.nav {
-  margin: 30px 0 80px 0;
-}
-
-.nav a {
-  margin: 5px 10px;
-}
-
-.nav:first-child {
-  padding-left: 0;
 }
