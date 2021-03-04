@@ -1,8 +1,58 @@
-import React from 'react'
+import React, { useState, useEffect} from 'react'
 import { NavLink } from "react-router-dom";
-import Dropdown from './Dropdown';
 
-export default function Nav({ isOpen, toggle }) {
+function Dropdown({ toggle }) {
+  return (
+    <div 
+      className="px-2 pt-2 pb-3 space-y-1 sm:px-3" 
+      onClick={toggle}
+    >
+      <NavLink 
+        to='/' 
+        exact 
+        activeClassName='bg-gray-900 text-white'
+        className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+      >
+        Now Playing
+      </NavLink>
+      <NavLink 
+        to='/upcoming' 
+        activeClassName='bg-gray-900 text-white'
+        className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+      >
+        Upcoming
+      </NavLink>  
+      <NavLink 
+        to='/theaters' 
+        activeClassName='bg-gray-900 text-white'
+        className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+      >
+        Theaters
+      </NavLink>  
+    </div>
+  )
+}
+
+export default function Nav() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const hideMenu = () => {
+      if(window.innerWidth > 768 && isOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', hideMenu)
+    return () => {
+      window.removeEventListener('resize', hideMenu)
+    }
+  }, [isOpen])
+
+  const toggle = () => {
+    setIsOpen(!isOpen)
+  }
+
   return (
     <nav className="bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

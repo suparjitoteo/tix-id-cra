@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Route, Switch } from "react-router-dom";
 import { handleReceiveCities } from "./actions/cities";
 
@@ -7,44 +7,27 @@ import Upcoming from './pages/Upcoming';
 import Nav from './components/Nav';
 import { useDispatch, useSelector } from 'react-redux';
 import Theaters from './pages/Theaters';
+import Select from './components/Select';
 
 function App() {
   const cities = useSelector(state => state.cities)
   const dispatch = useDispatch()
-  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     if (cities.length === 0) {
       dispatch(handleReceiveCities())
     }
-
-    const hideMenu = () => {
-      if(window.innerWidth > 768 && isOpen) {
-        setIsOpen(false)
-      }
-    }
-
-    window.addEventListener('resize', hideMenu)
-    return () => {
-      window.removeEventListener('resize', hideMenu)
-    }
-  }, [dispatch, isOpen])
-
-  const toggle = () => {
-    setIsOpen(!isOpen)
-  }
+  }, [dispatch])
 
   return (
-    <div>
-      <Nav 
-        isOpen={isOpen}
-        toggle={toggle}
-      />
+    <React.Fragment>
+      <Nav />
       <div className='container'>
         <div className='flex justify-end'>
-          <p>Selected City: </p>
+          <p>Selected City:</p> 
+          <Select options={cities} />
         </div>
-        <Switch>
+        {/* <Switch>
           <Route path='/' exact>
             <NowPlaying />
           </Route>
@@ -54,9 +37,9 @@ function App() {
           <Route path='/theaters'>
             <Theaters />
           </Route>
-        </Switch>
+        </Switch> */}
       </div>
-    </div>
+    </React.Fragment>
   )
 }
 
