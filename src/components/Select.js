@@ -35,12 +35,15 @@ export default function Select({
 }) {
   const inputRef = useRef(null)
   const [keyword, setKeyword] = useState('')
-  const [results, setResults] = useState([])
+  const [placeholder, setPlaceholder] = useState('Select City')
   const [selected, setSelected] = useState('')
-  const keydownPress = useKeyPress('ArrowDown', inputRef)
-  const keyupPress = useKeyPress('ArrowUp', inputRef)
-  const enterPress = useKeyPress("Enter");
   const [cursor, setCursor] = useState(0)
+  const [focus, setFocus] = useState(false)
+  const [results, setResults] = useState([])
+
+  // const keydownPress = useKeyPress('ArrowDown', inputRef)
+  // const keyupPress = useKeyPress('ArrowUp', inputRef)
+  const enterPress = useKeyPress("Enter", inputRef);
 
   const refs = results.reduce((acc, value) => {
     acc[value.id] = React.createRef();
@@ -48,56 +51,121 @@ export default function Select({
   }, {});
 
   const handleClick = id =>
-    refs[id]?.current.scrollIntoView({
-      behavior: 'smooth',
+    refs[id]?.current?.scrollIntoView({
+      behavior: 'auto',
       block: 'nearest',
     });
 
   useEffect(() => {
-    if (!keyword) {
-      setResults([])
-    } else {
-      const filtering = options.filter(option => option.name?.includes(keyword.toUpperCase()))
-                             .sort((a, b) => a.name > b.name ? 1 : -1)
-      setResults(filtering)
-    }
-  }, [keyword])
+    const filtering = options.filter(option => option.name?.includes(keyword.toUpperCase()))
+                          .sort((a, b) => a.name > b.name ? 1 : -1)
+                          
+    setPlaceholder(filtering[0]?.name ?? 'Select City')
+    setResults(filtering)
+    setCursor(0)
+  }, [keyword, focus])
+
+  // useEffect(() => {
+  //   if (focus) {
+  //     results.length > 0 && handleClick(results[0].id)
+  //   }
+  // }, [results])
 
   useEffect(() => {
-    if (results.length && keydownPress) {
-      console.log("down pressed")
-      setCursor(prevState => {
-        const newPosition = prevState < results.length - 1 ? prevState + 1 : prevState 
-        handleClick(results[newPosition].id)
+    if (!results[cursor]) return
 
-        return newPosition
-      })
-    }
-  }, [keydownPress])
+    handleClick(results[cursor].id)
+    setPlaceholder(results[cursor].name)
+  }, [cursor])
 
-  useEffect(() => {
-    if (results.length && keyupPress) {
-      console.log("up pressed")
-      setCursor(prevState => {
-       const newPosition = prevState > 0 ? prevState - 1 : prevState
-       handleClick(results[newPosition].id)
+  // useEffect(() => {
+  //   if (results.length && keydownPress) {
+  //     console.log("down pressed")
+  //     setCursor(prevState => {
+  //       const newPosition = prevState < results.length - 1 ? prevState + 1 : prevState 
+  //       handleClick(results[newPosition].id)
+  //       setPlaceholder(results[newPosition].name)
 
-       return newPosition
-      })
-    }
-  }, [keyupPress])
+  //       return newPosition
+  //     })
+  //   }
+  // }, [keydownPress])
+
+  // useEffect(() => {
+  //   if (results.length && keyupPress) {
+  //     console.log("up pressed")
+  //     setCursor(prevState => {
+  //      const newPosition = prevState > 0 ? prevState - 1 : prevState
+  //      handleClick(results[newPosition].id)
+  //      setPlaceholder(results[newPosition].name)
+
+  //      return newPosition
+  //     })
+  //   }
+  // }, [keyupPress])
 
   useEffect(() => {
     if (results.length && enterPress) {
       console.log("entered")
-      setSelected(results[cursor])
+      if (!focus) return
+
+      setFocus(false)
+      const selectedItem = results[cursor]
+      if (selectedItem) {
+        setSelected(selectedItem)
+        setKeyword(selectedItem.name)
+      }
     }
-  }, [cursor, enterPress])
+  }, [enterPress])
 
   const onTextChange = (e) => {
     setKeyword(e.target.value)
-    setCursor(0)
+    setFocus(true)
   }
+
+  const onInputFocus = (e) => {
+    console.log('input focused')
+    setFocus(!focus)
+  }
+
+  const onInputBlur = (e) => {
+    console.log('input blurred')
+    if (!focus) {
+      return
+    }
+    setFocus(false)
+    const selectedItem = results[cursor]
+    if (selectedItem) {
+      setSelected(selectedItem)
+      setKeyword(selectedItem.name)
+    }
+  }
+  
+  const onSelectItem = (e, option) => {
+    e.preventDefault()
+    setKeyword(option.name)
+    setFocus(false)
+    setSelected(option)
+  }
+
+  const keydownPress = (e) => {
+    if (results.length > 0 && e.key === 'ArrowDown') {
+      console.log("down pressed")
+      e.preventDefault()
+      if (!focus) return
+      setCursor(prevState => prevState < results.length - 1 ? prevState + 1 : prevState)
+    }
+
+    if (results.length > 0 && e.key === 'ArrowUp') {
+      console.log("up pressed")
+      e.preventDefault()
+      if (!focus) return
+      setCursor(prevState => prevState > 0 ? prevState - 1 : prevState)
+    }
+  }
+
+  console.log('focus', focus)
+  console.log('selected', selected)
 
   return (
     <div>
@@ -105,26 +173,37 @@ export default function Select({
         ref={inputRef}
         type='text' 
         autoComplete={'off'} 
-        style={{backgroundColor: 'red'}} 
+        style={{border: '1px solid red', padding: '5px'}} 
         name='search' 
         value={keyword} 
         onChange={onTextChange} 
+        onClick={onInputFocus}
+        onBlur={onInputBlur}
+        placeholder={placeholder}
+        onKeyDown={keydownPress}
       />
-      { results.length > 0 && (
-        <div>
-          <ul style={{ maxHeight: '250px', overflowY: 'scroll'}}>
-            { results.map((option, i) => (
-              <li 
-                key={option.id} 
-                style={{ backgroundColor: i === cursor ? 'gray' : '' }}
-                ref={refs[option.id]}
-              >
-                <div>{option.name}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      { focus && (
+        results.length > 0 ? (
+          <div>
+            <ul style={{ maxHeight: '250px', overflowY: 'scroll'}}>
+              { results.map((option, i) => (
+                <li 
+                  key={option.id} 
+                  style={{ backgroundColor: i === cursor ? 'gray' : '' }}
+                  ref={refs[option.id]}
+                  onMouseDown={(event) => onSelectItem(event, option)}
+                >
+                  <div>{option.name}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div>
+            <p>No Results !</p>
+          </div>
+        )
+      ) }
     </div>
   )
 }
