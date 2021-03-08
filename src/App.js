@@ -10,6 +10,8 @@ import Theaters from './pages/Theaters';
 import Select from './components/Select';
 
 function App() {
+  const [ city, setCity ] = React.useState({ id: '973818511182794752', name: 'JAKARTA'})
+
   const cities = useSelector(state => state.cities)
   const dispatch = useDispatch()
 
@@ -25,19 +27,22 @@ function App() {
       <div className='container'>
         <div className='flex justify-end'>
           <p>Selected City:</p> 
-          <Select options={cities} />
+          <Select 
+            onChange={(selectedCity) => setCity(selectedCity) || console.log('run function')}
+            options={cities} 
+          />
         </div>
-        {/* <Switch>
+        <Switch>
           <Route path='/' exact>
-            <NowPlaying />
+            <NowPlaying city={city}/>
           </Route>
-          <Route path='/upcoming'>
-            <Upcoming />
-          </Route>
+          // <Route path='/upcoming'>
+          //   <Upcoming />
+          // </Route>
           <Route path='/theaters'>
             <Theaters />
           </Route>
-        </Switch> */}
+        </Switch>
       </div>
     </React.Fragment>
   )

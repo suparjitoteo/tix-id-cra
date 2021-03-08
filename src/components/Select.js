@@ -31,12 +31,12 @@ const useKeyPress = (targetKey, inputRef) => {
 }
 
 export default function Select({
+  onChange,
   options = []
 }) {
   const inputRef = useRef(null)
   const [keyword, setKeyword] = useState('')
   const [placeholder, setPlaceholder] = useState('Select City')
-  const [selected, setSelected] = useState('')
   const [cursor, setCursor] = useState(0)
   const [focus, setFocus] = useState(false)
   const [results, setResults] = useState([])
@@ -112,7 +112,7 @@ export default function Select({
       setFocus(false)
       const selectedItem = results[cursor]
       if (selectedItem) {
-        setSelected(selectedItem)
+        onSetSelected(selectedItem)
         setKeyword(selectedItem.name)
       }
     }
@@ -136,7 +136,7 @@ export default function Select({
     setFocus(false)
     const selectedItem = results[cursor]
     if (selectedItem) {
-      setSelected(selectedItem)
+      onSetSelected(selectedItem)
       setKeyword(selectedItem.name)
     }
   }
@@ -145,7 +145,11 @@ export default function Select({
     e.preventDefault()
     setKeyword(option.name)
     setFocus(false)
-    setSelected(option)
+    onSetSelected(option)
+  }
+
+  const onSetSelected = (option) => {
+    onChange(option)
   }
 
   const keydownPress = (e) => {
@@ -165,10 +169,9 @@ export default function Select({
   }
 
   console.log('focus', focus)
-  console.log('selected', selected)
 
   return (
-    <div>
+    <div style={{ position: 'relative'}}>
       <input 
         ref={inputRef}
         type='text' 
@@ -184,7 +187,7 @@ export default function Select({
       />
       { focus && (
         results.length > 0 ? (
-          <div>
+          <div style={{ position: 'absolute', width: '100%', backgroundColor: 'white' }}>
             <ul style={{ maxHeight: '250px', overflowY: 'scroll'}}>
               { results.map((option, i) => (
                 <li 
