@@ -24,9 +24,9 @@ function App() {
   return (
     <React.Fragment>
       <Nav />
-      <div className='container'>
-        <div className='flex justify-end'>
-          <p>Selected City:</p> 
+      <div className='md:container'>
+        <div className='flex justify-end items-center mt-4 px-2'>
+          <p className='p-4'>Selected City:</p> 
           <Select 
             onChange={(selectedCity) => setCity(selectedCity) || console.log('run function')}
             options={cities} 

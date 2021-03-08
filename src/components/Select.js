@@ -176,7 +176,7 @@ export default function Select({
         ref={inputRef}
         type='text' 
         autoComplete={'off'} 
-        style={{border: '1px solid red', padding: '5px'}} 
+        className="border border-2 rounded-r px-2 py-2 w-full"
         name='search' 
         value={keyword} 
         onChange={onTextChange} 
@@ -187,12 +187,12 @@ export default function Select({
       />
       { focus && (
         results.length > 0 ? (
-          <div style={{ position: 'absolute', width: '100%', backgroundColor: 'white' }}>
-            <ul style={{ maxHeight: '250px', overflowY: 'scroll'}}>
+          <div className="max-h-72 overflow-auto z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <ul className="py-1">
               { results.map((option, i) => (
                 <li 
                   key={option.id} 
-                  style={{ backgroundColor: i === cursor ? 'gray' : '' }}
+                  className={`${(i === cursor ? 'bg-gray-200 text-gray-900' : '' )} cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-gray-900`}
                   ref={refs[option.id]}
                   onMouseDown={(event) => onSelectItem(event, option)}
                 >
@@ -202,8 +202,8 @@ export default function Select({
             </ul>
           </div>
         ) : (
-          <div>
-            <p>No Results !</p>
+          <div className="z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <p className='py-1 block px-4 py-2 text-sm text-gray-500'>NO RESULTS FOUND</p>
           </div>
         )
       ) }
