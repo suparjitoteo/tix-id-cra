@@ -33,6 +33,7 @@ function fetchWithToken(path) {
           throw new Error(data.error.message.en)
         }
       })
+      .catch((error) => console.log('Uh-oh.', `${error} ${path}`))
   }
 }
 
@@ -101,6 +102,25 @@ export function getSchedulesByCityAndMovie({ cityId, movieId }) {
 
 export function getMovie(movieId) {
   return fetchWithToken(`/v1/app/movie/${movieId}`)
+    .then(data => data)
+}
+
+function getAdditionalMovie(movieId) {
+  return fetchWithToken(`/v1/movie/additional/${movieId}`)
+    .then(data => data)
+}
+
+export function getMovieAndSchedule({ cityId, movieId }) {
+  return Promise.all([
+    getMovie(movieId), 
+    getAdditionalMovie(movieId),
+    getSchedulesByCityAndMovie({ cityId, movieId }),
+  ])
+    .then(([movie, additional, schedule]) => { return { movie, schedule } })
+}
+
+export function getShowtimes({ cityId, date, merchant='', movieId, page='', q='', sort='', studioType='' }) {
+  return fetchWithToken(`/v3/schedule?city=${cityId}&date=${date}&merchant=${merchant}&movie=${movieId}&page=${page}&q=${q}&sort=${sort}&studio_type=${studioType}&lat=&lon=`)
     .then(data => data)
 }
 

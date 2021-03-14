@@ -32,17 +32,16 @@ const useKeyPress = (targetKey, inputRef) => {
 
 export default function Select({
   onChange,
+  defaultValue='',
   options = []
 }) {
   const inputRef = useRef(null)
-  const [keyword, setKeyword] = useState('')
+  const [keyword, setKeyword] = useState(defaultValue)
   const [placeholder, setPlaceholder] = useState('Select City')
   const [cursor, setCursor] = useState(0)
   const [focus, setFocus] = useState(false)
   const [results, setResults] = useState([])
 
-  // const keydownPress = useKeyPress('ArrowDown', inputRef)
-  // const keyupPress = useKeyPress('ArrowUp', inputRef)
   const enterPress = useKeyPress("Enter", inputRef);
 
   const refs = results.reduce((acc, value) => {
@@ -65,44 +64,12 @@ export default function Select({
     setCursor(0)
   }, [keyword, focus])
 
-  // useEffect(() => {
-  //   if (focus) {
-  //     results.length > 0 && handleClick(results[0].id)
-  //   }
-  // }, [results])
-
   useEffect(() => {
     if (!results[cursor]) return
 
     handleClick(results[cursor].id)
     setPlaceholder(results[cursor].name)
   }, [cursor])
-
-  // useEffect(() => {
-  //   if (results.length && keydownPress) {
-  //     console.log("down pressed")
-  //     setCursor(prevState => {
-  //       const newPosition = prevState < results.length - 1 ? prevState + 1 : prevState 
-  //       handleClick(results[newPosition].id)
-  //       setPlaceholder(results[newPosition].name)
-
-  //       return newPosition
-  //     })
-  //   }
-  // }, [keydownPress])
-
-  // useEffect(() => {
-  //   if (results.length && keyupPress) {
-  //     console.log("up pressed")
-  //     setCursor(prevState => {
-  //      const newPosition = prevState > 0 ? prevState - 1 : prevState
-  //      handleClick(results[newPosition].id)
-  //      setPlaceholder(results[newPosition].name)
-
-  //      return newPosition
-  //     })
-  //   }
-  // }, [keyupPress])
 
   useEffect(() => {
     if (results.length && enterPress) {
