@@ -75,7 +75,7 @@ export default function MovieSchedule({ city }) {
       </div>
       <div className='flex p-2 m-4 items-center flex-col'>
         <h1>SCHEDULES</h1>
-        <div className='flex w-full overflow-x-scroll'>
+        <div className='flex w-full justify-center overflow-x-scroll'>
           { schedule.map(({ date, is_any_schedule }, index) => (
             is_any_schedule && (
               <CustomLink 
