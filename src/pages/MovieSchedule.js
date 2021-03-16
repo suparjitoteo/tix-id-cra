@@ -9,6 +9,7 @@ import id from "dayjs/locale/id"
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import MerchantTag from '../components/MerchantTag'
+import Select from '../components/Select'
 
 dayjs.locale({ ...id, })
 dayjs.extend(utc)
@@ -87,13 +88,13 @@ export default function MovieSchedule({ city }) {
                   className='text-black group-hover:text-white'
                   activeClassName='text-white'
                 >
-                  {dayjs(date).utc().format('DD MMM')}
+                  {dayjs(date).format('DD MMM')}
                 </p>
                 <p 
                   className='uppercase font-bold text-black group-hover:text-white'
                   activeClassName='text-white'
                 >
-                  {dayjs(date).utc().format('ddd')}
+                  {dayjs(date).format('ddd')}
                 </p>
               </CustomLink> 
             )
@@ -126,14 +127,29 @@ function Showtime({ cityId, movieId }) {
       cityId,
       movieId,
       date,
+      merchant: selectedMerchant,
     }).then(data => {
       console.log(data)
       setShowtimes(data)
     })
-  }, [date])
+  }, [date, selectedMerchant])
+
+  if (showtimes.length === 0) {
+    return <p>Loading...</p>
+  }
+
+  const merchantList = showtimes.filter.map(filter => { return { id: filter.merchant.merchant_id, name: filter.merchant.merchant_name }})
 
   return (
     <div className="flex flex-col">
+      <div className="flex justify-start">
+        <Select 
+          defaultPlaceholder='Merchant'
+          options={merchantList} 
+          onChange={(merchant) => setSelectedMerchant(merchant.id) || console.log(merchant)}
+          searchable={false}
+        />
+      </div>
       <ShowtimeTable schedules={showtimes.schedules} />
     </div>
   )
