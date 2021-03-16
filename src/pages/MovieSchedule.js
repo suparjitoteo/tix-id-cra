@@ -128,17 +128,19 @@ function Showtime({ cityId, movieId }) {
       movieId,
       date,
       merchant: selectedMerchant,
+      sort,
     }).then(data => {
       console.log(data)
       setShowtimes(data)
     })
-  }, [date, selectedMerchant])
+  }, [date, selectedMerchant, sort])
 
   if (showtimes.length === 0) {
     return <p>Loading...</p>
   }
 
   const merchantList = showtimes.filter.map(filter => { return { id: filter.merchant.merchant_id, name: filter.merchant.merchant_name }})
+  const sortList = showtimes.sort.map(sort => { return { id: sort.key, name: sort.label.en }})
 
   return (
     <div className="flex flex-col">
@@ -147,6 +149,12 @@ function Showtime({ cityId, movieId }) {
           defaultPlaceholder='Merchant'
           options={merchantList} 
           onChange={(merchant) => setSelectedMerchant(merchant.id) || console.log(merchant)}
+          searchable={false}
+        />
+        <Select
+          defaultPlaceholder='Sorting'
+          options={sortList}
+          onChange={(sort) => setSort(sort.id) || console.log(sort)}
           searchable={false}
         />
       </div>
