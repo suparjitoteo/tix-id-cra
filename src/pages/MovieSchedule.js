@@ -75,7 +75,7 @@ export default function MovieSchedule({ city }) {
       </div>
       <div className='flex p-2 m-4 items-center flex-col'>
         <h1>SCHEDULES</h1>
-        <div className='flex flex-nowrap overflow-x-scroll'>
+        <div className='flex w-full overflow-x-scroll'>
           { schedule.map(({ date, is_any_schedule }, index) => (
             is_any_schedule && (
               <CustomLink 
@@ -144,19 +144,26 @@ function Showtime({ cityId, movieId }) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-start">
-        <Select 
-          defaultPlaceholder='Merchant'
-          options={merchantList} 
-          onChange={(merchant) => setSelectedMerchant(merchant.id) || console.log(merchant)}
-          searchable={false}
-        />
-        <Select
-          defaultPlaceholder='Sorting'
-          options={sortList}
-          onChange={(sort) => setSort(sort.id) || console.log(sort)}
-          searchable={false}
-        />
+      <div className="flex justify-start items-center mx-4">
+        <div>
+          <h3>Filter:</h3>
+        </div>
+        <div className="mx-1 my-4">
+          <Select 
+            defaultPlaceholder='Merchant'
+            options={merchantList} 
+            onChange={(merchant) => setSelectedMerchant(merchant.id) || console.log(merchant)}
+            searchable={false}
+          />
+        </div>
+        <div className="mx-1 my-4">
+          <Select
+            defaultPlaceholder='Sorting'
+            options={sortList}
+            onChange={(sort) => setSort(sort.id) || console.log(sort)}
+            searchable={false}
+          />
+        </div>
       </div>
       <ShowtimeTable schedules={showtimes.schedules} />
     </div>
@@ -175,7 +182,7 @@ function ShowtimeTable({ schedules }) {
       return eachSchedules.schedules.map(studio => (
         <div 
           key={studio.id}
-          className='flex flex-col p-4 shadow-lg rounded-lg mb-4 border border-gray-100'
+          className='flex flex-col mx-4 p-4 shadow-lg rounded-lg mb-4 border border-gray-100'
         >
           <div className='flex justify-between items-start'>
             <div>
