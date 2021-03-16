@@ -59,7 +59,7 @@ export default function MovieSchedule({ city }) {
   return (
     <React.Fragment>
       <div className="p-2 flex flex-wrap items-start md:flex-nowrap m-4">
-        <img className='w-full md:w-auto md:pt-6 justify-center' src={movie.poster} alt={movie.name} />
+        <img className='w-full md:w-2/6 lg:w-64 md:pt-6 justify-center' src={movie.poster} alt={movie.name} />
         <div className="md:ml-4 p-4 flex-col">
           <h1>{movie.name}</h1>
           <div className='flex flex-wrap'>
