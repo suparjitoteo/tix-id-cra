@@ -25,6 +25,8 @@ module.exports = {
   variants: {
     extend: {
       margin: ['first'],
+      backgroundColor: ['active'],
+      opacity: ['disabled'],
     }
   },
   plugins: [],

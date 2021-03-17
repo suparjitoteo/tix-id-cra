@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, useParams, useRouteMatch } from 'react-router'
+import { Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router'
 import TagLabel from '../components/TagLabel'
 import { getMovieAndSchedule, getShowtimes } from '../utils/api/tixid'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,8 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import MerchantTag from '../components/MerchantTag'
 import Select from '../components/Select'
+import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
+import { parse } from 'query-string'
 
 dayjs.locale({ ...id, })
 dayjs.extend(utc)
@@ -75,7 +77,7 @@ export default function MovieSchedule({ city }) {
       </div>
       <div className='flex p-2 m-4 items-center flex-col'>
         <h1>SCHEDULES</h1>
-        <div className='flex w-full justify-center overflow-x-scroll'>
+        <div className='flex w-full md:justify-center overflow-x-scroll'>
           { schedule.map(({ date, is_any_schedule }, index) => (
             is_any_schedule && (
               <CustomLink 
@@ -115,9 +117,14 @@ export default function MovieSchedule({ city }) {
 
 function Showtime({ cityId, movieId }) {
   const { date } = useParams()
+  const test = useParams()
+  const location = useLocation()
+  const route = useRouteMatch()
+
+  const searchParams = location.search ? parse(location.search) : null
+  const page = searchParams?.page ?? 1
 
   const [ selectedMerchant, setSelectedMerchant ] = React.useState('')
-  const [ page, setPage ] = React.useState(1)
   const [ sort, setSort ] = React.useState('alfabetical')
   const [ studioType, setStudioType ] = React.useState('')
   const [ showtimes, setShowtimes ] = React.useState([])
@@ -129,11 +136,12 @@ function Showtime({ cityId, movieId }) {
       date,
       merchant: selectedMerchant,
       sort,
+      page: searchParams?.page ?? 1,
     }).then(data => {
       console.log(data)
       setShowtimes(data)
     })
-  }, [date, selectedMerchant, sort])
+  }, [date, selectedMerchant, sort, page])
 
   if (showtimes.length === 0) {
     return <p>Loading...</p>
@@ -142,9 +150,12 @@ function Showtime({ cityId, movieId }) {
   const merchantList = showtimes.filter.map(filter => { return { id: filter.merchant.merchant_id, name: filter.merchant.merchant_name }})
   const sortList = showtimes.sort.map(sort => { return { id: sort.key, name: sort.label.en }})
 
+  const hasNextPage = showtimes.has_next
+  const isFirstPage = page === 1
+
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-start items-center mx-4">
+    <div className="flex flex-col px-4">
+      <div className="flex justify-end items-center">
         <div>
           <h3>Filter:</h3>
         </div>
@@ -165,6 +176,28 @@ function Showtime({ cityId, movieId }) {
           />
         </div>
       </div>
+      <div className='flex justify-end mb-4'>
+        <Link
+            to={location => generateLink(location, { key: 'page', value: page - 1 })}
+        >
+          <button 
+            className={`disabled:opacity-30 group rounded py-2 px-3 mx-1 border border-gray-400 hover:bg-gray-800 hover:border-transparent hover:shadow-sm active:bg-gray-900`}
+            disabled={isFirstPage}
+          >
+            <AiFillCaretLeft className='group-hover:text-white'/>
+          </button>
+        </Link>
+        <Link
+          to={location => generateLink(location, { key: 'page', value: page + 1 })}
+        >
+        <button 
+          className='disabled:opacity-30 group rounded py-2 px-3 mx-1 border border-gray-400 hover:bg-gray-800 hover:border-transparent hover:shadow-sm active:bg-gray-900'
+          disabled={!hasNextPage}
+        >
+          <AiFillCaretRight className='group-hover:text-white' />
+        </button>
+        </Link>
+      </div>
       <ShowtimeTable schedules={showtimes.schedules} />
     </div>
   )
@@ -182,7 +215,7 @@ function ShowtimeTable({ schedules }) {
       return eachSchedules.schedules.map(studio => (
         <div 
           key={studio.id}
-          className='flex flex-col mx-4 p-4 shadow-lg rounded-lg mb-4 border border-gray-100'
+          className='flex flex-col p-4 shadow-lg rounded-lg mb-4 border border-gray-100'
         >
           <div className='flex justify-between items-start'>
             <div>
@@ -221,4 +254,11 @@ function ShowtimeTable({ schedules }) {
       ))}
     )
   )
+}
+
+function generateLink(location, param) {
+  if (location.search)
+    return `${location.pathname}${location.search}&${param.key}=${param.value}`
+  else
+    return `${location.pathname}?${param.key}=${param.value}`
 }

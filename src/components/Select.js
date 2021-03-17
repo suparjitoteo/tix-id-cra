@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { AiFillCaretDown } from 'react-icons/ai'
 
 const useKeyPress = (targetKey, inputRef) => {
   const [keyPressed, setKeyPressed] = useState(false)
@@ -146,12 +147,13 @@ export default function Select({
 
   return (
     <div style={{ position: 'relative'}}>
-      <input 
+      <div className='flex group items-center cursor-pointer'>
+        <input 
         ref={inputRef}
         type='text' 
         autoComplete={'off'} 
         readOnly={!searchable}
-        className="border border-2 rounded-r px-2 py-1 w-full placeholder-black"
+        className="border rounded px-2 py-1 text-sm w-full placeholder-black group-hover:border-gray-300 group-hover:shadow-sm"
         name='search' 
         value={keyword} 
         onChange={onTextChange} 
@@ -160,6 +162,13 @@ export default function Select({
         placeholder={placeholder}
         onKeyDown={keydownPress}
       />
+      { !searchable && (
+        <div 
+          className='flex pointer-events-none justify-center items-center w-8 h-6 -ml-8 border-l border-gray-300'>
+          <AiFillCaretDown className='text-gray-300 group-hover:text-gray-500' />
+        </div>
+      )}
+      </div>
       { focus && (
         results.length > 0 ? (
           <div className="max-h-72 overflow-auto z-10 origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
