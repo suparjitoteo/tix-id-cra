@@ -86,7 +86,6 @@ export default function Select({
 
   useEffect(() => {
     if (results.length && enterPress) {
-      console.log("entered")
       if (!focus) return
 
       const selectedItem = results[cursor]
@@ -149,25 +148,25 @@ export default function Select({
     <div style={{ position: 'relative'}}>
       <div className='flex group items-center cursor-pointer'>
         <input 
-        ref={inputRef}
-        type='text' 
-        autoComplete={'off'} 
-        readOnly={!searchable}
-        className="border rounded px-2 py-1 text-sm w-full placeholder-black group-hover:border-gray-300 group-hover:shadow-sm"
-        name='search' 
-        value={keyword} 
-        onChange={onTextChange} 
-        onClick={onInputFocus}
-        onBlur={onInputBlur}
-        placeholder={placeholder}
-        onKeyDown={keydownPress}
-      />
-      { !searchable && (
-        <div 
-          className='flex pointer-events-none justify-center items-center w-8 h-6 -ml-8 border-l border-gray-300'>
-          <AiFillCaretDown className='text-gray-300 group-hover:text-gray-500' />
-        </div>
-      )}
+          ref={inputRef}
+          type='text' 
+          autoComplete={'off'} 
+          readOnly={!searchable}
+          className="border rounded px-2 py-1 text-sm w-full placeholder-black group-hover:border-gray-300 group-hover:shadow-sm"
+          name='search' 
+          value={keyword} 
+          onChange={onTextChange} 
+          onClick={onInputFocus}
+          onBlur={onInputBlur}
+          placeholder={placeholder}
+          onKeyDown={keydownPress}
+        />
+        { !searchable && (
+          <div 
+            className='flex pointer-events-none justify-center items-center w-8 h-6 -ml-8 border-l border-gray-300'>
+            <AiFillCaretDown className='text-gray-300 group-hover:text-gray-500' />
+          </div>
+        )}
       </div>
       { focus && (
         results.length > 0 ? (

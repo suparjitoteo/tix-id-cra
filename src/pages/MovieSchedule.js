@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router'
+import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
 import TagLabel from '../components/TagLabel'
 import { getMovieAndSchedule, getShowtimes } from '../utils/api/tixid'
 import { Link } from 'react-router-dom'
@@ -58,6 +58,8 @@ export default function MovieSchedule({ city }) {
     return <p>Loading...</p>
   }
 
+  const hasSchedule = movie.presale_flag || movie.status === 'NOW_PLAYING'
+
   return (
     <React.Fragment>
       <div className="p-2 flex flex-wrap items-start md:flex-nowrap m-4">
@@ -75,56 +77,59 @@ export default function MovieSchedule({ city }) {
           <p className='mt-4'>Directed By: {movie.director}</p>
         </div>
       </div>
-      <div className='flex p-2 m-4 items-center flex-col'>
-        <h1>SCHEDULES</h1>
-        <div className='flex w-full md:justify-center overflow-x-scroll'>
-          { schedule.map(({ date, is_any_schedule }, index) => (
-            is_any_schedule && (
-              <CustomLink 
-                key={index} 
-                to={`${url}/${date}`}
-                className='flex flex-shrink-0 flex-col items-center group p-2 my-4 mx-2 border-gray-500 border hover:bg-gray-800 rounded-lg text-xs hover:shadow-lg hover:border-transparent'
-                activeClassName='font-bold bg-gray-700 shadow-lg'
-              >
-                <p 
-                  className='text-black group-hover:text-white'
-                  activeClassName='text-white'
-                >
-                  {dayjs(date).format('DD MMM')}
-                </p>
-                <p 
-                  className='uppercase font-bold text-black group-hover:text-white'
-                  activeClassName='text-white'
-                >
-                  {dayjs(date).format('ddd')}
-                </p>
-              </CustomLink> 
-            )
-          ))}
-        </div>
-      </div>
-      <Switch>
-        <Route path={`${url}/:date`}>
-          <Showtime cityId={city.id} movieId={id}/>
-        </Route>
-        <Route path='*'>
-          <div>No date selected</div>
-        </Route>
-      </Switch>
+      {hasSchedule && (
+        <React.Fragment>
+          <div className='flex p-2 m-4 items-center flex-col'>
+            <h1>SCHEDULES</h1>
+            <div className='flex w-full md:justify-center overflow-x-scroll'>
+              { schedule.map(({ date, is_any_schedule }, index) => (
+                is_any_schedule && (
+                  <CustomLink 
+                    key={index} 
+                    to={`${url}/${date}`}
+                    className='flex flex-shrink-0 flex-col items-center group p-2 my-4 mx-2 border-gray-500 border hover:bg-gray-800 rounded-lg text-xs hover:shadow-lg hover:border-transparent'
+                    activeClassName='font-bold bg-gray-700 shadow-lg'
+                  >
+                    <p 
+                      className='text-black group-hover:text-white'
+                      activeClassName='text-white'
+                    >
+                      {dayjs(date).format('DD MMM')}
+                    </p>
+                    <p 
+                      className='uppercase font-bold text-black group-hover:text-white'
+                      activeClassName='text-white'
+                    >
+                      {dayjs(date).format('ddd')}
+                    </p>
+                  </CustomLink> 
+                )
+              ))}
+            </div>
+          </div>
+          <Switch>
+            <Route path={`${url}/:date`}>
+              <Showtime cityId={city.id} movieId={id}/>
+            </Route>
+            <Route path='*'>
+              <Redirect to={`${url}/${schedule[0].date}`} />
+            </Route>
+          </Switch>
+        </React.Fragment>
+      )}
     </React.Fragment>
   )
 }
 
 function Showtime({ cityId, movieId }) {
   const { date } = useParams()
-  const test = useParams()
   const location = useLocation()
-  const route = useRouteMatch()
+  const history = useHistory()
 
   const searchParams = location.search ? parse(location.search) : null
-  const page = searchParams?.page ?? 1
+  const merchant = searchParams?.merchant ?? ''
+  const page = +(searchParams?.page) || 1
 
-  const [ selectedMerchant, setSelectedMerchant ] = React.useState('')
   const [ sort, setSort ] = React.useState('alfabetical')
   const [ studioType, setStudioType ] = React.useState('')
   const [ showtimes, setShowtimes ] = React.useState([])
@@ -134,14 +139,14 @@ function Showtime({ cityId, movieId }) {
       cityId,
       movieId,
       date,
-      merchant: selectedMerchant,
+      merchant,
       sort,
-      page: searchParams?.page ?? 1,
+      page,
     }).then(data => {
       console.log(data)
       setShowtimes(data)
     })
-  }, [date, selectedMerchant, sort, page])
+  }, [date, merchant, sort, page])
 
   if (showtimes.length === 0) {
     return <p>Loading...</p>
@@ -162,8 +167,12 @@ function Showtime({ cityId, movieId }) {
         <div className="mx-1 my-4">
           <Select 
             defaultPlaceholder='Merchant'
+            defaultValue={merchant ? merchantList.find(x => x.id === merchant) : {}}
             options={merchantList} 
-            onChange={(merchant) => setSelectedMerchant(merchant.id) || console.log(merchant)}
+            onChange={(merchant) => {
+              const link = generateLink(location, { key: 'merchant', value: merchant.id })
+              history.push(link)
+            }}
             searchable={false}
           />
         </div>
@@ -257,8 +266,16 @@ function ShowtimeTable({ schedules }) {
 }
 
 function generateLink(location, param) {
-  if (location.search)
-    return `${location.pathname}${location.search}&${param.key}=${param.value}`
+  const searchParams = location.search ? parse(location.search) : null
+  if (searchParams) {
+    const newParams = { ...searchParams, [param.key]: param.value }
+    const generateParams = Object.entries(newParams).reduce((acc, val, idx) => {
+      const [ key, value ] = val
+      return `${acc}${idx === 0 ? '?' : '&'}${key}=${value}`
+    }, '')
+
+    return `${location.pathname}${generateParams}`
+  }
   else
     return `${location.pathname}?${param.key}=${param.value}`
 }
