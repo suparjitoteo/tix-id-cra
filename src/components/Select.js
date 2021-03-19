@@ -1,59 +1,45 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { AiFillCaretDown } from 'react-icons/ai'
 
-const useKeyPress = (targetKey, inputRef) => {
-  const [keyPressed, setKeyPressed] = useState(false)
-
-  const downHandler = (event) => {
-    if (event.key === targetKey) {
-      event.preventDefault()
-      setKeyPressed(true)
-    }
-  }
-
-  const upHandler = (event) => {
-    if (event.key === targetKey) {
-      event.preventDefault()
-      setKeyPressed(false)
-    }
-  }
-
-  useEffect(() => {
-    inputRef.current.addEventListener('keydown', downHandler)
-    inputRef.current.addEventListener('keyup', upHandler)
-
-    return () => {
-      inputRef.current?.removeEventListener('keydown', downHandler)
-      inputRef.current?.removeEventListener('keyup', upHandler)
-    }
-  })
-
-  return keyPressed
-}
-
 export default function Select({
   onChange,
-  defaultValue={},
-  defaultPlaceholder='Select City',
+  initialValue={},
+  value=undefined,
+  placeholder='Selection',
   options = [],
   searchable=true,
+  mandatory=false,
 }) {
-  if (!searchable) options = [{id: '', name: defaultPlaceholder}, ...options]
+  if (!searchable && !mandatory) options = [{id: '', name: placeholder}, ...options]
 
   const inputRef = useRef(null)
-  const [keyword, setKeyword] = useState('')
-  const [placeholder, setPlaceholder] = useState(defaultValue?.name ?? defaultPlaceholder)
-  const [cursor, setCursor] = useState(0)
-  const [focus, setFocus] = useState(false)
-  const [results, setResults] = useState([])
-  const [selected, setSelected] = useState(defaultValue)
+  const [isOpen, setIsOpen] = React.useState(false)
 
-  const enterPress = useKeyPress("Enter", inputRef);
+  const [keyword, setKeyword] = useState('')
+  const [cursor, setCursor] = useState(0)
+  const [results, setResults] = useState([])
+  const [selected, setSelected] = useState(initialValue)
+  
+  React.useEffect(() => {
+    if (value === undefined)
+      return
+    setSelected(value)    
+  }, [value])
 
   const refs = results.reduce((acc, value) => {
     acc[value.id] = React.createRef();
     return acc;
   }, {});
+
+  const toggleOpen = (event) => {
+    event.stopPropagation()
+    setIsOpen((isOpen) => !isOpen)
+    inputRef.current.focus()
+  }
+
+  const closeMenu = () => {
+    setIsOpen(false)
+  }
 
   const handleClick = id =>
     refs[id]?.current?.scrollIntoView({
@@ -62,6 +48,8 @@ export default function Select({
     });
 
   useEffect(() => {
+    if (!isOpen) return
+
     const filtering = options.filter(option => {
       if (!searchable) return true;
       return option.name?.includes(keyword.toUpperCase())
@@ -75,42 +63,21 @@ export default function Select({
 
     const selectedIndex = filtering.findIndex((el) => el.id === selected.id)
     setResults(filtering)
-    setCursor((selectedIndex < 0 || !focus) ? 0 : selectedIndex)
-  }, [keyword, focus])
+    setCursor(selectedIndex < 0 ? 0 : selectedIndex)
+  }, [keyword, isOpen])
 
   useEffect(() => {
     if (!results[cursor]) return
 
     handleClick(results[cursor].id)
-  }, [cursor])
-
-  useEffect(() => {
-    if (results.length && enterPress) {
-      if (!focus) return
-
-      const selectedItem = results[cursor]
-      if (selectedItem) {
-        onSetSelected(selectedItem)
-      }
-    }
-  }, [enterPress])
+  }, [cursor, isOpen])
 
   const onTextChange = (e) => {
     setKeyword(e.target.value)
-    setFocus(true)
-  }
-
-  const onInputFocus = (e) => {
-    console.log('input focused')
-    setFocus(!focus)
   }
 
   const onInputBlur = (e) => {
-    console.log('input blurred')
-    if (!focus) {
-      return
-    }
-    setFocus(false)
+    closeMenu()
     setKeyword('')
   }
   
@@ -120,55 +87,64 @@ export default function Select({
   }
 
   const onSetSelected = (option) => {
-    inputRef.current.blur()
-    setFocus(false)
     setKeyword('')
     setSelected(option)
-    setPlaceholder(option.name)
+    closeMenu()
     onChange(option)
+    inputRef.current.blur()
   }
 
   const keydownPress = (e) => {
     if (results.length > 0 && e.key === 'ArrowDown') {
-      console.log("down pressed")
       e.preventDefault()
-      if (!focus) return
       setCursor(prevState => prevState < results.length - 1 ? prevState + 1 : prevState)
     }
 
     if (results.length > 0 && e.key === 'ArrowUp') {
-      console.log("up pressed")
       e.preventDefault()
-      if (!focus) return
       setCursor(prevState => prevState > 0 ? prevState - 1 : prevState)
+    }
+
+    if (results.length && e.key === 'Enter') { 
+      e.preventDefault()
+      const selectedItem = results[cursor]
+      if (selectedItem) {
+        onSetSelected(selectedItem)
+      }
     }
   }
 
   return (
-    <div style={{ position: 'relative'}}>
-      <div className='flex group items-center cursor-pointer'>
-        <input 
-          ref={inputRef}
-          type='text' 
-          autoComplete={'off'} 
-          readOnly={!searchable}
-          className="border rounded px-2 py-1 text-sm w-full placeholder-black group-hover:border-gray-300 group-hover:shadow-sm"
-          name='search' 
-          value={keyword} 
-          onChange={onTextChange} 
-          onClick={onInputFocus}
-          onBlur={onInputBlur}
-          placeholder={placeholder}
-          onKeyDown={keydownPress}
-        />
+    <div className='relative'>
+      <div 
+        className='flex group justify-between items-center cursor-pointer border rounded px-2 py-1 text-sm w-56 hover:border-gray-500 hover:shadow-sm'
+        onKeyDown={keydownPress}
+        onClick={toggleOpen}
+        tabIndex={0}
+      >
+        <div className='flex'>
+          <input 
+            ref={inputRef}
+            type='text' 
+            autoComplete={'off'} 
+            readOnly={!searchable}
+            className={`${!searchable || !isOpen ? 'w-0' : `${keyword && 'w-full'}`} w-1 w-min-0 focus:outline-none`}
+            name='search' 
+            value={keyword} 
+            onChange={onTextChange} 
+            onClick={onInputBlur}
+            onBlur={onInputBlur}
+          />
+          { !keyword && (<div className=''>{selected?.name ?? placeholder}</div>) } 
+        </div>
         { !searchable && (
           <div 
-            className='flex pointer-events-none justify-center items-center w-8 h-6 -ml-8 border-l border-gray-300'>
+            className='flex pointer-events-none justify-center items-center w-8 h-6 -mr-2 border-l border-gray-300'>
             <AiFillCaretDown className='text-gray-300 group-hover:text-gray-500' />
           </div>
         )}
       </div>
-      { focus && (
+      { isOpen && (
         results.length > 0 ? (
           <div className="max-h-72 overflow-auto z-10 origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
             <ul className="py-1">

@@ -29,7 +29,7 @@ function App() {
         <div className='flex justify-end items-center mt-4 px-2'>
           <p className='p-4'>Selected City:</p> 
           <Select 
-            defaultValue={city}
+            initialValue={city}
             onChange={(selectedCity) => setCity(selectedCity) || console.log('run function')}
             options={cities} 
           />

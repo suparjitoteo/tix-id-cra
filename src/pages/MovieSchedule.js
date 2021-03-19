@@ -129,9 +129,8 @@ function Showtime({ cityId, movieId }) {
   const searchParams = location.search ? parse(location.search) : null
   const merchant = searchParams?.merchant ?? ''
   const page = +(searchParams?.page) || 1
+  const sort = searchParams?.sort ?? 'alfabetical'
 
-  const [ sort, setSort ] = React.useState('alfabetical')
-  const [ studioType, setStudioType ] = React.useState('')
   const [ showtimes, setShowtimes ] = React.useState([])
 
   React.useEffect(() => {
@@ -166,11 +165,11 @@ function Showtime({ cityId, movieId }) {
         </div>
         <div className="mx-1 my-4">
           <Select 
-            defaultPlaceholder='Merchant'
-            defaultValue={merchant ? merchantList.find(x => x.id === merchant) : {}}
+            placeholder='Merchant'
             options={merchantList} 
+            value={merchant && merchantList.find(x => x.id === merchant)}
             onChange={(merchant) => {
-              const link = generateLink(location, { key: 'merchant', value: merchant.id })
+              const link = generateLink(location, [{ key: 'merchant', value: merchant.id }, { key: 'page', value: 1 }])
               history.push(link)
             }}
             searchable={false}
@@ -178,10 +177,15 @@ function Showtime({ cityId, movieId }) {
         </div>
         <div className="mx-1 my-4">
           <Select
-            defaultPlaceholder='Sorting'
+            placeholder='Sorting'
             options={sortList}
-            onChange={(sort) => setSort(sort.id) || console.log(sort)}
+            value={sort && sortList.find(x => x.id === sort)}
+            onChange={(sort) => {
+              const link = generateLink(location, [{ key: 'sort', value: sort.id }, { key: 'page', value: 1 }])
+              history.push(link)
+            }}
             searchable={false}
+            mandatory
           />
         </div>
       </div>
@@ -265,17 +269,24 @@ function ShowtimeTable({ schedules }) {
   )
 }
 
-function generateLink(location, param) {
-  const searchParams = location.search ? parse(location.search) : null
-  if (searchParams) {
-    const newParams = { ...searchParams, [param.key]: param.value }
-    const generateParams = Object.entries(newParams).reduce((acc, val, idx) => {
-      const [ key, value ] = val
-      return `${acc}${idx === 0 ? '?' : '&'}${key}=${value}`
-    }, '')
+function generateLink(location, params) {
+  const searchParams = location.search ? parse(location.search) : {}
 
-    return `${location.pathname}${generateParams}`
+  let newParams = {}
+  if (Array.isArray(params)) {
+    newParams = { ...searchParams, ...Object.assign({}, ...params.map(x => extractVal(x))) } 
+  } else {
+    newParams = { ...searchParams, ...extractVal(params) }
   }
-  else
-    return `${location.pathname}?${param.key}=${param.value}`
+
+  const generateParams = Object.entries(newParams).reduce((acc, val, idx) => {
+    const [ key, value ] = val
+    return `${acc}${idx === 0 ? '?' : '&'}${key}=${value}`
+  }, '')
+
+  return `${location.pathname}${generateParams}`
+}
+
+function extractVal(obj) {
+  return { [obj.key]: obj.value }
 }
