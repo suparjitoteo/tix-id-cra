@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
 import TagLabel from '../components/TagLabel'
-import { getMovieAndSchedule, getShowtimes } from '../utils/api/tixid'
+import { getMovieDetail, getSchedulesByCityAndMovie, getShowtimes } from '../utils/api/tixid'
 import { Link } from 'react-router-dom'
 
 import dayjs from 'dayjs'
@@ -44,17 +44,23 @@ export default function MovieSchedule({ city }) {
   const [ movie, setMovie ] = React.useState(null)
   const [ additional, setAdditional] = React.useState(null)
   const [ schedule, setSchedule ] = React.useState(null)
-
+  
   React.useEffect(() => {
-    getMovieAndSchedule({ cityId: city.id, movieId: id})
+    getMovieDetail(id)
     .then(data => {
       setMovie(data.movie)
       setAdditional(data.additional)
-      setSchedule(data.schedule)
     })
   }, [])
 
-  if (!movie || !schedule) {
+  React.useEffect(() => {
+    if (movie?.presale_flag || movie?.status === 'NOW_PLAYING') {
+      getSchedulesByCityAndMovie({ movieId: id, cityId: city.id })
+      .then(data => setSchedule(data))
+    }
+  }, [movie])
+
+  if (!movie) {
     return <p>Loading...</p>
   }
 
@@ -77,45 +83,51 @@ export default function MovieSchedule({ city }) {
           <p className='mt-4'>Directed By: {movie.director}</p>
         </div>
       </div>
-      {hasSchedule && (
-        <React.Fragment>
-          <div className='flex p-2 m-4 items-center flex-col'>
-            <h1>SCHEDULES</h1>
-            <div className='flex w-full md:justify-center overflow-x-scroll'>
-              { schedule.map(({ date, is_any_schedule }, index) => (
-                is_any_schedule && (
-                  <CustomLink 
-                    key={index} 
-                    to={`${url}/${date}`}
-                    className='flex flex-shrink-0 flex-col items-center group p-2 my-4 mx-2 border-gray-500 border hover:bg-gray-800 rounded-lg text-xs hover:shadow-lg hover:border-transparent'
-                    activeClassName='font-bold bg-gray-700 shadow-lg'
-                  >
-                    <p 
-                      className='text-black group-hover:text-white'
-                      activeClassName='text-white'
+      {hasSchedule ? (
+        !schedule ? (
+          <div><p>Loading schedule...</p></div>
+        ) : (
+          <React.Fragment>
+            <div className='flex p-2 m-4 items-center flex-col'>
+              <h1>SCHEDULES</h1>
+              <div className='flex w-full md:justify-center overflow-x-scroll'>
+                { schedule.map(({ date, is_any_schedule }, index) => (
+                  is_any_schedule && (
+                    <CustomLink 
+                      key={index} 
+                      to={`${url}/${date}`}
+                      className='flex flex-shrink-0 flex-col items-center group p-2 my-4 mx-2 border-gray-500 border hover:bg-gray-800 rounded-lg text-xs hover:shadow-lg hover:border-transparent'
+                      activeClassName='font-bold bg-gray-700 shadow-lg'
                     >
-                      {dayjs(date).format('DD MMM')}
-                    </p>
-                    <p 
-                      className='uppercase font-bold text-black group-hover:text-white'
-                      activeClassName='text-white'
-                    >
-                      {dayjs(date).format('ddd')}
-                    </p>
-                  </CustomLink> 
-                )
-              ))}
+                      <p 
+                        className='text-black group-hover:text-white'
+                        activeClassName='text-white'
+                      >
+                        {dayjs(date).format('DD MMM')}
+                      </p>
+                      <p 
+                        className='uppercase font-bold text-black group-hover:text-white'
+                        activeClassName='text-white'
+                      >
+                        {dayjs(date).format('ddd')}
+                      </p>
+                    </CustomLink> 
+                  )
+                ))}
+              </div>
             </div>
-          </div>
-          <Switch>
-            <Route path={`${url}/:date`}>
-              <Showtime cityId={city.id} movieId={id}/>
-            </Route>
-            <Route path='*'>
-              <Redirect to={`${url}/${schedule[0].date}`} />
-            </Route>
-          </Switch>
-        </React.Fragment>
+            <Switch>
+              <Route path={`${url}/:date`}>
+                <Showtime cityId={city.id} movieId={id}/>
+              </Route>
+              <Route path='*'>
+                <Redirect to={`${url}/${schedule[0].date}`} />
+              </Route>
+            </Switch>
+          </React.Fragment>
+        )
+      ) : (
+       null 
       )}
     </React.Fragment>
   )
@@ -192,6 +204,7 @@ function Showtime({ cityId, movieId }) {
       <div className='flex justify-end mb-4'>
         <Link
             to={location => generateLink(location, { key: 'page', value: page - 1 })}
+            className={`${isFirstPage ? 'pointer-events-none' : ''}`}
         >
           <button 
             className={`disabled:opacity-30 group rounded py-2 px-3 mx-1 border border-gray-400 hover:bg-gray-800 hover:border-transparent hover:shadow-sm active:bg-gray-900`}
@@ -202,6 +215,7 @@ function Showtime({ cityId, movieId }) {
         </Link>
         <Link
           to={location => generateLink(location, { key: 'page', value: page + 1 })}
+          className={`${!hasNextPage ? 'pointer-events-none' : ''}`}
         >
         <button 
           className='disabled:opacity-30 group rounded py-2 px-3 mx-1 border border-gray-400 hover:bg-gray-800 hover:border-transparent hover:shadow-sm active:bg-gray-900'
@@ -247,7 +261,7 @@ function ShowtimeTable({ schedules }) {
                 <div className='flex flex-wrap'>
                   {studioType.show_time.map(showtime => {
                     const expired = dayjs(dayjs.unix(showtime.expired).utc().format('YYYY-MM-DD HH:mm')).unix()
-                    let className = expired < now ? 'bg-gray-200 text-gray-400' : 'border border-gray-300'
+                    let className = (expired < now) || !showtime.status ? 'bg-gray-200 text-gray-400' : 'border border-gray-300'
                     return (
                       <div 
                         key={showtime.id} 

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Theaters from './pages/Theaters';
 import Select from './components/Select';
 import MovieSchedule from './pages/MovieSchedule';
+import Theater from './pages/Theater';
 
 function App() {
   const [ city, setCity ] = React.useState({ id: '967969975509716992', name: 'JAKARTA'})
@@ -44,8 +45,11 @@ function App() {
           <Route path='/movie/:id'>
             <MovieSchedule city={city} />
           </Route>
-          <Route path='/theaters'>
-            <Theaters />
+          <Route exact path='/theaters'>
+            <Theaters city={city} />
+          </Route>
+          <Route path='/theaters/:id'>
+            <Theater />
           </Route>
         </Switch>
       </div>

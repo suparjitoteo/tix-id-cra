@@ -33,7 +33,10 @@ function fetchWithToken(path) {
           throw new Error(data.error.message.en)
         }
       })
-      .catch((error) => console.log('Uh-oh.', `${error} ${path}`))
+      .catch((error) => {
+        console.log('Uh-oh.', `${error} ${path}`)
+        return error
+      })
   }
 }
 
@@ -110,13 +113,12 @@ function getAdditionalMovie(movieId) {
     .then(data => data)
 }
 
-export function getMovieAndSchedule({ cityId, movieId }) {
+export function getMovieDetail(movieId) {
   return Promise.all([
     getMovie(movieId), 
     getAdditionalMovie(movieId),
-    getSchedulesByCityAndMovie({ cityId, movieId }),
   ])
-    .then(([movie, additional, schedule]) => { return { movie, schedule } })
+    .then(([movie, additional]) => { return { movie, additional } })
 }
 
 export function getShowtimes({ cityId, date, merchant='', movieId, page='', q='', sort='', studioType='' }) {

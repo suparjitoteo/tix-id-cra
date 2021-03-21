@@ -48,8 +48,6 @@ export default function Select({
     });
 
   useEffect(() => {
-    if (!isOpen) return
-
     const filtering = options.filter(option => {
       if (!searchable) return true;
       return option.name?.includes(keyword.toUpperCase())
@@ -117,7 +115,7 @@ export default function Select({
   return (
     <div className='relative'>
       <div 
-        className='flex group justify-between items-center cursor-pointer border rounded px-2 py-1 text-sm w-56 hover:border-gray-500 hover:shadow-sm'
+        className='flex group justify-between items-center cursor-pointer border rounded px-2 py-1 text-sm w-28 md:w-56 hover:border-gray-500 hover:shadow-sm'
         onKeyDown={keydownPress}
         onClick={toggleOpen}
         tabIndex={0}
@@ -128,14 +126,14 @@ export default function Select({
             type='text' 
             autoComplete={'off'} 
             readOnly={!searchable}
-            className={`${!searchable || !isOpen ? 'w-0' : `${keyword && 'w-full'}`} w-1 w-min-0 focus:outline-none`}
+            className={`${!searchable || !isOpen ? 'w-0' : keyword && 'w-full'} w-1 w-min-0 focus:outline-none`}
             name='search' 
             value={keyword} 
             onChange={onTextChange} 
             onClick={onInputBlur}
             onBlur={onInputBlur}
           />
-          { !keyword && (<div className=''>{selected?.name ?? placeholder}</div>) } 
+          {!keyword && <div className='-ml-1'>{selected.name || placeholder}</div>}
         </div>
         { !searchable && (
           <div 
@@ -144,9 +142,8 @@ export default function Select({
           </div>
         )}
       </div>
-      { isOpen && (
-        results.length > 0 ? (
-          <div className="max-h-72 overflow-auto z-10 origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+      { results.length > 0 ? (
+          <div className={`${!isOpen && 'hidden'} max-h-72 overflow-auto z-10 origin-top-right absolute right-0 mt-2 md:w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none`}>
             <ul className="py-1">
               { results.map((option, i) => {
                 let bgColor = ''
@@ -169,11 +166,11 @@ export default function Select({
             </ul>
           </div>
         ) : (
-          <div className="z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div className={`${!isOpen && 'hidden'} z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none`}>
             <p className='py-1 block px-4 py-2 text-sm text-gray-500'>NO RESULTS FOUND</p>
           </div>
         )
-      ) }
+      }
     </div>
   )
 }
