@@ -10,6 +10,7 @@ import Theaters from './pages/Theaters';
 import Select from './components/Select';
 import MovieSchedule from './pages/MovieSchedule';
 import Theater from './pages/Theater';
+import Footer from './components/Footer';
 
 function App() {
   const [ city, setCity ] = React.useState({ id: '967969975509716992', name: 'JAKARTA'})
@@ -53,6 +54,7 @@ function App() {
           </Route>
         </Switch>
       </div>
+      <Footer />
     </React.Fragment>
   )
 }

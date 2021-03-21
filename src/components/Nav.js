@@ -57,7 +57,7 @@ export default function Nav() {
 
   return (
     <nav className="flex justify-center bg-gray-800 h-16">
-      <div className="absolute w-full bg-gray-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
+      <div className="w-full bg-gray-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div className="flex items-center justify-between h-16">
           <div>
             <h1 className="text-white">Tix ID Clone</h1>
