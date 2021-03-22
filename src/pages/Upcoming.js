@@ -3,12 +3,13 @@ import Card from '../components/Card'
 import MerchantTag from '../components/MerchantTag'
 import useUpcoming from '../hooks/useUpcoming'
 import { Link } from 'react-router-dom'
+import Loading from './Loading'
 
 export default function Upcoming ({city}) {
   const { response: upcoming, loading } = useUpcoming(city.id)
 
   if (loading) {
-    return <p>Loading...</p>
+    return <Loading />
   }
 
   return (

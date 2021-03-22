@@ -27,7 +27,7 @@ function App() {
   return (
     <React.Fragment>
       <Nav />
-      <div className='md:container'>
+      <div className='md:container min-h-inherit'>
         <div className='flex justify-end items-center mt-4 px-2'>
           <p className='p-4'>Selected City:</p> 
           <Select 
@@ -36,23 +36,25 @@ function App() {
             options={cities} 
           />
         </div>
-        <Switch>
-          <Route path='/' exact>
-            <NowPlaying city={city}/>
-          </Route>
-          <Route path='/upcoming'>
-            <Upcoming city={city} />
-          </Route>
-          <Route path='/movie/:id'>
-            <MovieSchedule city={city} />
-          </Route>
-          <Route exact path='/theaters'>
-            <Theaters city={city} />
-          </Route>
-          <Route path='/theaters/:id'>
-            <Theater />
-          </Route>
-        </Switch>
+        <div className='min-h-inherit'>
+          <Switch>
+            <Route path='/' exact>
+              <NowPlaying city={city}/>
+            </Route>
+            <Route path='/upcoming'>
+              <Upcoming city={city} />
+            </Route>
+            <Route path='/movie/:id'>
+              <MovieSchedule city={city} />
+            </Route>
+            <Route exact path='/theaters'>
+              <Theaters city={city} />
+            </Route>
+            <Route path='/theaters/:id'>
+              <Theater />
+            </Route>
+          </Switch>
+        </div>
       </div>
       <Footer />
     </React.Fragment>

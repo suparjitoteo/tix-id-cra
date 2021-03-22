@@ -12,6 +12,7 @@ import MerchantTag from '../components/MerchantTag'
 import Select from '../components/Select'
 import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
 import { parse } from 'query-string'
+import Loading from './Loading'
 
 dayjs.locale({ ...id, })
 dayjs.extend(utc)
@@ -61,7 +62,7 @@ export default function MovieSchedule({ city }) {
   }, [movie])
 
   if (!movie) {
-    return <p>Loading...</p>
+    return <Loading />
   }
 
   const hasSchedule = movie.presale_flag || movie.status === 'NOW_PLAYING'
@@ -85,7 +86,7 @@ export default function MovieSchedule({ city }) {
       </div>
       {hasSchedule ? (
         !schedule ? (
-          <div><p>Loading schedule...</p></div>
+          <Loading text={'Loading Schedule'} />
         ) : (
           <React.Fragment>
             <div className='flex p-2 m-4 items-center flex-col'>
@@ -160,7 +161,7 @@ function Showtime({ cityId, movieId }) {
   }, [date, merchant, sort, page])
 
   if (showtimes.length === 0) {
-    return <p>Loading...</p>
+    return <Loading />
   }
 
   const merchantList = showtimes.filter.map(filter => { return { id: filter.merchant.merchant_id, name: filter.merchant.merchant_name }})

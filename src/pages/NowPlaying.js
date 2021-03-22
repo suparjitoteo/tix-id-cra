@@ -3,12 +3,13 @@ import Card from '../components/Card'
 import useNowPlaying from '../hooks/useNowPlaying'
 import { Link } from 'react-router-dom'
 import MerchantTag from '../components/MerchantTag'
+import Loading from './Loading'
 
 export default function NowPlaying ({ city }) {
   const { response: nowPlaying, loading} = useNowPlaying(city.id)
 
   if (loading) {
-    return <p>Loading...</p>
+    return <Loading />
   }
 
   return (

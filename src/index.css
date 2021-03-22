@@ -35,7 +35,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  color: '##666a6f';
+  color: '#666a6f';
 }
 
 @layer base {
@@ -51,4 +51,12 @@ body {
   h4 {
     @apply text-sm font-medium;
   }
+}
+
+.main {
+  min-height: calc(100vh - 20rem);
+}
+
+.min-h-inherit {
+  min-height: inherit;
 }
