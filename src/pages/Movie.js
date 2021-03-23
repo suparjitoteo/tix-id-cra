@@ -61,7 +61,10 @@ export default function Movie({ city }) {
 
   return (
     <React.Fragment>
-      <div className="p-2 flex flex-wrap items-start md:flex-nowrap m-4">
+      <div className="relative p-2 flex flex-wrap items-start md:flex-nowrap m-4">
+        <div className='absolute h-full top-0 flex justify-center left-0 w-full bg-gray-800 -z-10 backgroundImg'>
+          <div className='bg-gray-500 opacity-80 w-full' />
+        </div>
         <img className='w-full md:w-2/6 lg:w-64 md:pt-6 justify-center' src={movie.poster} alt={movie.name} />
         <div className="md:ml-4 p-4 flex-col">
           <h1>{movie.name}</h1>

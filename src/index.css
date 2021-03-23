@@ -60,3 +60,8 @@ body {
 .min-h-inherit {
   min-height: inherit;
 }
+
+.backgroundImg {
+  background-image: url('https://themoviedb.org/t/p/original/x4UkhIQuHIJyeeOTdcbZ3t3gBSa.jpg');
+  background-size: cover;
+}

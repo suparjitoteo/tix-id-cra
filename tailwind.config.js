@@ -20,7 +20,11 @@ module.exports = {
        '3/4': '75%',
        'full': '100%',
     },
-    extend: {},
+    extend: {
+      zIndex: {
+        '-10': '-10',
+      }
+    },
   },
   variants: {
     extend: {
