@@ -15,6 +15,7 @@ import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
 import { parse } from 'query-string'
 import Loading from './Loading'
 import MovieSchedule from './MovieSchedule'
+import Error from './Error'
 
 dayjs.locale({ ...id, })
 dayjs.extend(utc)
@@ -27,12 +28,17 @@ export default function Movie({ city }) {
   const [ movie, setMovie ] = React.useState(null)
   const [ additional, setAdditional] = React.useState(null)
   const [ schedule, setSchedule ] = React.useState(null)
+  const [ error, setError ] = React.useState(null)
   
   React.useEffect(() => {
+    setError(null)
     getMovieDetail(id)
     .then(data => {
       setMovie(data.movie)
       setAdditional(data.additional)
+    })
+    .catch(error => {
+      setError(error.message)
     })
   }, [])
 
@@ -42,6 +48,10 @@ export default function Movie({ city }) {
       .then(data => setSchedule(data))
     }
   }, [movie])
+
+  if (error) {
+    return <Error message={error} />
+  }
 
   if (!movie) {
     return <Loading />
@@ -100,8 +110,10 @@ function Showtime({ cityId, movieId }) {
   const sort = searchParams?.sort ?? 'alfabetical'
 
   const [ showtimes, setShowtimes ] = React.useState([])
+  const [ error, setError ] = React.useState(null)
 
   React.useEffect(() => {
+    setError(null)
     getShowtimes({
       cityId,
       movieId,
@@ -112,8 +124,14 @@ function Showtime({ cityId, movieId }) {
     }).then(data => {
       console.log(data)
       setShowtimes(data)
+    }).catch(error => {
+      setError(error.message)
     })
   }, [date, merchant, sort, page])
+
+  if (error) {
+    return <Error message={error} />
+  }
 
   if (showtimes.length === 0) {
     return <Loading />

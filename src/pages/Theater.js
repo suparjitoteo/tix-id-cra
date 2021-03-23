@@ -6,14 +6,20 @@ import Loading from './Loading'
 import MovieSchedule from './MovieSchedule'
 
 import dayjs from 'dayjs'
+import Error from './Error'
 
 export default function Theater({ city }) {
   const { id } = useParams()
   const { url } = useRouteMatch()
 
-  const { response: schedules, loading } = useSchedulesByTheater(id)
-  const { response: theaters, loading: loadingTheaters } = useTheaters(city.id)
-  const { response: showtimes, loading: loadingShowtimes } = useShowtimesByTheater(id)
+  const { response: schedules, loading, error } = useSchedulesByTheater(id)
+  const { response: theaters, loading: loadingTheaters, error: errorTheaters } = useTheaters(city.id)
+  const { response: showtimes, loading: loadingShowtimes, error: errorShowtimes } = useShowtimesByTheater(id)
+
+  if (error || errorTheaters || errorShowtimes) {
+    const errorMsg = error?.message || errorTheaters?.message || errorShowtimes?.message
+    return <Error message={errorMsg} />
+  }
 
   if (loading || loadingTheaters || loadingShowtimes) {
     return <Loading />
@@ -26,6 +32,7 @@ export default function Theater({ city }) {
       <header className='flex flex-col mx-4 my-4'>
         <h1>{theater.name}</h1>
         <p className='text-xs'>{theater.address}</p>
+        { theater.contact && (<p className='text-xs'>{theater.contact}</p>) }
       </header>
       
       { schedules.length ? (
@@ -42,7 +49,7 @@ export default function Theater({ city }) {
         </React.Fragment>
 
       ) : (
-          <p className='text-3xl text-center'>No schedules available !</p>
+        <p className='text-3xl text-center'>No schedules available !</p>
       )}
     </div>
   )

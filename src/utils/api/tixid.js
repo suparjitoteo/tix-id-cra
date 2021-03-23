@@ -35,7 +35,7 @@ function fetchWithToken(path) {
       })
       .catch((error) => {
         console.log('Uh-oh.', `${error} ${path}`)
-        return error
+        throw new Error(error.message)
       })
   }
 }

@@ -11,6 +11,7 @@ import Select from './components/Select';
 import Movie from './pages/Movie';
 import Theater from './pages/Theater';
 import Footer from './components/Footer';
+import NotFound from './pages/NotFound';
 
 function App() {
   const [ city, setCity ] = React.useState({ id: '967969975509716992', name: 'JAKARTA'})
@@ -52,6 +53,9 @@ function App() {
             </Route>
             <Route path='/theaters/:id'>
               <Theater city={city} />
+            </Route>
+            <Route path='*'>
+              <NotFound />
             </Route>
           </Switch>
         </div>
