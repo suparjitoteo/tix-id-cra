@@ -94,6 +94,11 @@ export function getTheaters(cityId) {
 }
 
 export function getSchedulesByTheater(theaterId) {
+  return fetchWithToken(`/v2/schedule/theater/running-date/${theaterId}`)
+    .then(data => data)
+}
+
+export function getShowtimesByTheater(theaterId) {
   return fetchWithToken(`/v2/schedule/theater/${theaterId}`)
     .then(data => data)
 }

@@ -8,7 +8,7 @@ import Nav from './components/Nav';
 import { useDispatch, useSelector } from 'react-redux';
 import Theaters from './pages/Theaters';
 import Select from './components/Select';
-import MovieSchedule from './pages/MovieSchedule';
+import Movie from './pages/Movie';
 import Theater from './pages/Theater';
 import Footer from './components/Footer';
 
@@ -45,13 +45,13 @@ function App() {
               <Upcoming city={city} />
             </Route>
             <Route path='/movie/:id'>
-              <MovieSchedule city={city} />
+              <Movie city={city} />
             </Route>
             <Route exact path='/theaters'>
               <Theaters city={city} />
             </Route>
             <Route path='/theaters/:id'>
-              <Theater />
+              <Theater city={city} />
             </Route>
           </Switch>
         </div>
