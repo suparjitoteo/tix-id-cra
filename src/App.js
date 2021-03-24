@@ -28,12 +28,12 @@ function App() {
   return (
     <React.Fragment>
       <Nav />
-      <div className='md:container min-h-inherit'>
+      <div className='md:container min-h-inherit px-2 md:px-32'>
         <div className='flex justify-end items-center mt-4 px-2'>
           <p className='p-4'>Selected City:</p> 
           <Select 
             initialValue={city}
-            onChange={(selectedCity) => setCity(selectedCity) || console.log('run function')}
+            onChange={(selectedCity) => setCity(selectedCity)}
             options={cities} 
           />
         </div>

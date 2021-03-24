@@ -57,7 +57,7 @@ export default function Nav() {
 
   return (
     <nav className="flex justify-center bg-gray-800 h-16">
-      <div className="w-full bg-gray-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
+      <div className="w-full bg-gray-800 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div className="flex items-center justify-between h-16">
           <Link to='/'>
             <h1 className="text-white">Tix ID Clone</h1>
@@ -68,21 +68,21 @@ export default function Nav() {
                 to='/' 
                 exact 
                 activeClassName='bg-gray-900 text-pink-50'
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-xs font-medium"
               >
                 Now Playing
               </NavLink>
               <NavLink 
                 to='/upcoming' 
                 activeClassName='bg-gray-900 text-pink-50'
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-xs font-medium"
               >
                 Upcoming
               </NavLink>  
               <NavLink 
                 to='/theaters' 
                 activeClassName='bg-gray-900 text-pink-50'
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-xs font-medium"
               >
                 Theaters
               </NavLink>  

@@ -29,7 +29,7 @@ export default function Theater({ city }) {
 
   return (
     <div className='flex flex-col'>
-      <header className='flex flex-col mx-4 my-4'>
+      <header className='flex flex-col my-4'>
         <h1>{theater.name}</h1>
         <p className='text-xs'>{theater.address}</p>
         { theater.contact && (<p className='text-xs'>{theater.contact}</p>) }
@@ -80,7 +80,7 @@ function ShowtimeTable({ schedules }) {
       return (
         <div 
           key={movie.id}
-          className='flex flex-col p-4 shadow-lg rounded-lg mb-4 border border-gray-100'
+          className='flex flex-col p-4 shadow-lg rounded-lg md:mx-4 mb-4 border border-gray-100'
         >
           <div className='flex flex-col'>
             <h3>{movie.movie_name}</h3>

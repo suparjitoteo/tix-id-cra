@@ -61,12 +61,9 @@ export default function Movie({ city }) {
 
   return (
     <React.Fragment>
-      <div className="relative p-2 flex flex-wrap items-start md:flex-nowrap m-4">
-        <div className='absolute h-full top-0 flex justify-center left-0 w-full bg-gray-800 -z-10 backgroundImg'>
-          <div className='bg-gray-500 opacity-80 w-full' />
-        </div>
+      <div className="p-2 flex flex-wrap items-start md:flex-nowrap md:m-4">
         <img className='w-full md:w-2/6 lg:w-64 md:pt-6 justify-center' src={movie.poster} alt={movie.name} />
-        <div className="md:ml-4 p-4 flex-col">
+        <div className="md:ml-4 py-4 md:p-4 flex-col">
           <h1>{movie.name}</h1>
           <div className='flex flex-wrap'>
             <TagLabel bgColor='bg-gray-400' textColor='text-white' text={movie.rating} />
@@ -125,7 +122,6 @@ function Showtime({ cityId, movieId }) {
       sort,
       page,
     }).then(data => {
-      console.log(data)
       setShowtimes(data)
     }).catch(error => {
       setError(error.message)
@@ -147,7 +143,7 @@ function Showtime({ cityId, movieId }) {
   const isFirstPage = page === 1
 
   return (
-    <div className="flex flex-col px-4">
+    <div className="flex flex-col md:px-4">
       <div className="flex justify-end items-center">
         <div>
           <h3>Filter:</h3>

@@ -14,8 +14,6 @@ export default function useFetch(apiMethod, params) {
       if(!signal.aborted) {
         setResponse(data)
         setLoading(false)
-
-        console.log("API Retrieved")
       }
     }).catch(error => {
       setError(error)
