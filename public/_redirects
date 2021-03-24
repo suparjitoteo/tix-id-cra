@@ -1,0 +1,5 @@
+/v1/app/*   https://curated.tix.id/v1/app/:splat  200
+/v1/*     https://api.tix.id/v1/:splat  200
+/v2/*     https://api.tix.id/v2/:splat  200
+/v3/*     https://api.tix.id/v3/:splat  200
+/*      /index.html  200
