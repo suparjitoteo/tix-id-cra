@@ -1,14 +1,14 @@
-import React from 'react'
 import Card from '../components/Card'
 import MerchantTag from '../components/MerchantTag'
 import useUpcoming from '../hooks/useUpcoming'
 import { Link } from 'react-router-dom'
 import Loading from './Loading'
+import { City } from '../utils/api/tixid'
 
-export default function Upcoming ({city}) {
+export default function Upcoming ({city}: { city: City }) {
   const { response: upcoming, loading } = useUpcoming(city.id)
 
-  if (loading) {
+  if (loading || !upcoming) {
     return <Loading />
   }
 

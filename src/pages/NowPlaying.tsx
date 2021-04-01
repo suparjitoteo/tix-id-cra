@@ -1,14 +1,14 @@
-import React from 'react'
 import Card from '../components/Card'
 import useNowPlaying from '../hooks/useNowPlaying'
 import { Link } from 'react-router-dom'
 import MerchantTag from '../components/MerchantTag'
 import Loading from './Loading'
+import { City } from '../utils/api/tixid'
 
-export default function NowPlaying ({ city }) {
+export default function NowPlaying ({ city }: { city: City }) {
   const { response: nowPlaying, loading} = useNowPlaying(city.id)
 
-  if (loading) {
+  if (loading || !nowPlaying) {
     return <Loading />
   }
 

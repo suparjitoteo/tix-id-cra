@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function useFetch(apiMethod, params) {
-  const [response, setResponse] = React.useState({})
+export default function useFetch<T>(apiMethod: (params: string) => Promise<T>, params: string) {
+  const [response, setResponse] = React.useState<T|null>(null)
   const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(null)
+  const [error, setError] = React.useState<Error|null>(null)
 
   React.useEffect(() => {
     const abortController = new AbortController()

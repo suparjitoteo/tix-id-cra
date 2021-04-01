@@ -1,7 +1,10 @@
 import React, { useState, useEffect} from 'react'
 import { Link, NavLink } from "react-router-dom";
 
-function Dropdown({ isOpen, toggle }) {
+function Dropdown({ isOpen, toggle }: {
+  isOpen: boolean,
+  toggle: () => void
+}) {
 
   const transformEffect = isOpen ? 'translate-y-16 z-10' : 'z-0 -translate-y-36'
   return (

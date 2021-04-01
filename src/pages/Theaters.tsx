@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import useTheaters from '../hooks/useTheater'
+import { City } from '../utils/api/tixid'
 import Loading from './Loading'
 
-export default function Theaters({ city }) {
+export default function Theaters({ city }: { city: City }) {
   const { response: theaters, loading } = useTheaters(city.id)
 
-  if (loading) {
+  if (loading || !theaters) {
     return <Loading />
   }
 

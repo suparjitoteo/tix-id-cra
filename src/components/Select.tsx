@@ -1,24 +1,34 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { MouseEvent, useEffect, useRef, useState } from 'react'
 import { AiFillCaretDown } from 'react-icons/ai'
+
+export type Options = { id: string, name: string }
 
 export default function Select({
   onChange,
-  initialValue={},
+  initialValue=undefined,
   value=undefined,
   placeholder='Selection',
   options = [],
   searchable=true,
   mandatory=false,
+}: {
+  onChange: (arg: Options) => void
+  initialValue?: Options|undefined
+  value?: Options|undefined
+  placeholder?: string
+  options: Options[]
+  searchable?: boolean
+  mandatory?: boolean
 }) {
   if (!searchable && !mandatory) options = [{id: '', name: placeholder}, ...options]
 
-  const inputRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isOpen, setIsOpen] = React.useState(false)
 
   const [keyword, setKeyword] = useState('')
   const [cursor, setCursor] = useState(0)
-  const [results, setResults] = useState([])
-  const [selected, setSelected] = useState(initialValue)
+  const [results, setResults] = useState<Options[]>([])
+  const [selected, setSelected] = useState<Options|undefined>(initialValue)
   
   React.useEffect(() => {
     if (value === undefined)
@@ -26,22 +36,25 @@ export default function Select({
     setSelected(value)    
   }, [value])
 
-  const refs = results.reduce((acc, value) => {
-    acc[value.id] = React.createRef();
+  type test = {
+    [x: string]: React.RefObject<HTMLLIElement>
+  }
+  const refs = results.reduce((acc: test, value: Options) => {
+    acc[value.id] = React.createRef<HTMLLIElement>();
     return acc;
   }, {});
 
-  const toggleOpen = (event) => {
+  const toggleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()
     setIsOpen((isOpen) => !isOpen)
-    inputRef.current.focus()
+    inputRef?.current?.focus()
   }
 
   const closeMenu = () => {
     setIsOpen(false)
   }
 
-  const handleClick = id =>
+  const handleClick = (id: string) =>
     refs[id]?.current?.scrollIntoView({
       behavior: 'auto',
       block: 'nearest',
@@ -59,7 +72,7 @@ export default function Select({
       }
     })
 
-    const selectedIndex = filtering.findIndex((el) => el.id === selected.id)
+    const selectedIndex = filtering.findIndex((el) => el.id === selected?.id)
     setResults(filtering)
     setCursor(selectedIndex < 0 ? 0 : selectedIndex)
   }, [keyword, isOpen])
@@ -70,29 +83,29 @@ export default function Select({
     handleClick(results[cursor].id)
   }, [cursor, isOpen])
 
-  const onTextChange = (e) => {
+  const onTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value)
   }
 
-  const onInputBlur = (e) => {
+  const onInputBlur = (e: React.FocusEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement>) => {
     closeMenu()
     setKeyword('')
   }
   
-  const onSelectItem = (e, option) => {
+  const onSelectItem = (e: React.MouseEvent<HTMLLIElement, globalThis.MouseEvent>, option: Options) => {
     e.preventDefault()
     onSetSelected(option)
   }
 
-  const onSetSelected = (option) => {
+  const onSetSelected = (option: Options) => {
     setKeyword('')
     setSelected(option)
     closeMenu()
     onChange(option)
-    inputRef.current.blur()
+    inputRef?.current?.blur()
   }
 
-  const keydownPress = (e) => {
+  const keydownPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (results.length > 0 && e.key === 'ArrowDown') {
       e.preventDefault()
       setCursor(prevState => prevState < results.length - 1 ? prevState + 1 : prevState)
@@ -133,7 +146,7 @@ export default function Select({
             onClick={onInputBlur}
             onBlur={onInputBlur}
           />
-          {!keyword && <div className='-ml-1'>{selected.name || placeholder}</div>}
+          {!keyword && <div className='-ml-1'>{selected?.name || placeholder}</div>}
         </div>
         { !searchable && (
           <div 
@@ -147,7 +160,7 @@ export default function Select({
             <ul className="py-1">
               { results.map((option, i) => {
                 let bgColor = ''
-                if (option.name === selected.name) {
+                if (option.name === selected?.name) {
                   bgColor = 'bg-blue-200 text-gray-900'
                 } else if (i === cursor) {
                   bgColor = 'bg-gray-200 text-gray-900'

@@ -12,11 +12,11 @@ import Movie from './pages/Movie';
 import Theater from './pages/Theater';
 import Footer from './components/Footer';
 import NotFound from './pages/NotFound';
+import { RootState } from './reducers';
 
 function App() {
   const [ city, setCity ] = React.useState({ id: '967969975509716992', name: 'JAKARTA'})
-
-  const cities = useSelector(state => state.cities)
+  const cities = useSelector((state: RootState) => state.cities)
   const dispatch = useDispatch()
 
   useEffect(() => {

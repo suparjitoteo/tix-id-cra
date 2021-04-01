@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 
 import dayjs from 'dayjs'
+import { MovieSchedule as MovieScheduleInterface } from '../utils/api/tixid'
 
-function CustomLink ({ to, className, activeClassName, children }) {
+import HTMLAttributes from '../index.d'
+
+function CustomLink ({ to, className, activeClassName, children }: {
+  to: string,
+  className: string,
+  activeClassName: string,
+  children: ReactElement[]
+}) {
   const match = useRouteMatch(to)
 
   return (
@@ -23,7 +31,7 @@ function CustomLink ({ to, className, activeClassName, children }) {
   )
 }
 
-export default function MovieSchedule({ schedule }) {
+export default function MovieSchedule({ schedule }: { schedule: MovieScheduleInterface[]}) {
   const { url } = useRouteMatch()
 
   return (

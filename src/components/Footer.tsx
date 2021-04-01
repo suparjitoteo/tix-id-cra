@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { FaFacebook, FaHeart, FaInstagram, FaTwitter } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
-function CustomLink({ isExternal = false, children, ...rest }) {
+function CustomLink({ isExternal = false, children, ...rest }: {
+  isExternal: boolean,
+  children: ReactNode,
+  to: string,
+  className: string,
+}) {
   return (
     isExternal ? (
       <a href={rest.to} rel="noopener noreferrer" target="_blank" className={rest.className}>

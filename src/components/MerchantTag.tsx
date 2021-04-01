@@ -1,7 +1,6 @@
-import React from 'react'
 import TagLabel from './TagLabel'
 
-export default function MerchantTag({ merchant_name }) {
+export default function MerchantTag({ merchant_name }: { merchant_name: string}) {
   let bgColor = 'bg-blue-600'
   if (merchant_name === 'CGV')
     bgColor = 'bg-red-600'
