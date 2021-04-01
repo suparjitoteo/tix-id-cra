@@ -14,7 +14,7 @@ dayjs.extend(utc)
 
 export default function Theater({ city }: { city: City }) {
   const { id }: { id: string } = useParams()
-  const { url }: { url: string } = useRouteMatch()
+  const { url } = useRouteMatch()
 
   const { response: schedules, loading, error } = useSchedulesByTheater(id)
   const { response: theaters, loading: loadingTheaters, error: errorTheaters } = useTheaters(city.id)
@@ -32,7 +32,7 @@ export default function Theater({ city }: { city: City }) {
   const theater = theaters.find(x => x.id === id)
 
   if (!theater) {
-    return <p>No Theater available !</p>
+    return <p className='text-3xl text-center'>No theaters available !</p>
   }
 
   return (
